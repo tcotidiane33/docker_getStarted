@@ -1,0 +1,17 @@
+---
+- name: Configure Common Settings
+  hosts: all
+  roles:
+    - common
+
+- name: Configure Webservers
+  hosts: webservers
+  roles:
+    - nginx
+    - docker
+
+- name: Configure Databases
+  hosts: databases
+  roles:
+    - postgresql
+    - backup

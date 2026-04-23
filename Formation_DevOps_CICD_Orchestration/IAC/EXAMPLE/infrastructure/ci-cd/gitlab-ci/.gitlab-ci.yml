@@ -1,0 +1,42 @@
+stages:
+  - validate
+  - build
+  - test
+  - deploy
+
+variables:
+  TF_ROOT: ${CI_PROJECT_DIR}/infrastructure/terraform/environments/dev
+
+validate:
+  stage: validate
+  image: hashicorp/terraform:light
+  script:
+    - cd $TF_ROOT
+    - terraform init -backend=false
+    - terraform validate
+    - terraform fmt -check
+
+build:
+  stage: build
+  image: docker:latest
+  services:
+    - docker:dind
+  script:
+    - docker build -t myregistry.com/frontend:$CI_COMMIT_SHA infrastructure/docker/frontend
+    - docker build -t myregistry.com/backend:$CI_COMMIT_SHA infrastructure/docker/backend
+
+test:
+  stage: test
+  script:
+    - echo "Running unit tests..."
+    # Add actual test commands here
+
+deploy_dev:
+  stage: deploy
+  image: hashicorp/terraform:light
+  script:
+    - cd $TF_ROOT
+    - terraform init
+    - terraform apply -auto-approve
+  only:
+    - develop

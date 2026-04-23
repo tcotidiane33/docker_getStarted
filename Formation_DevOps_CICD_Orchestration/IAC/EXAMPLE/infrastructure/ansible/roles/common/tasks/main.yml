@@ -1,0 +1,26 @@
+---
+- name: Update apt cache
+  apt:
+    update_cache: yes
+    cache_valid_time: 3600
+  when: ansible_os_family == "Debian"
+
+- name: Install common packages
+  package:
+    name:
+      - curl
+      - vim
+      - git
+      - htop
+    state: present
+
+- name: Ensure NTP is installed
+  package:
+    name: ntp
+    state: present
+
+- name: Ensure NTP service is running
+  service:
+    name: ntp
+    state: started
+    enabled: yes
